@@ -22,7 +22,8 @@ snake_dX, snake_dY = 0, 0
 snakeTail = []
 tailLength = 0
 audioPlayer = Player()
-wavFile = load('Audio/eat_food.wav', streaming = False)
+eatFoodWav = load('audio/eat_food.wav', streaming = False)
+deathWav = load('audio/death.wav', streaming = False)
 
 #called when the window is opened or updated
 @window.event
@@ -80,6 +81,7 @@ def game_over_screen():
                           anchor_x = 'center', anchor_y = 'center',
                           multiline = True, width = window.width,
                           align = 'center')
+    play_sound(deathWav)
 
 #for snek
 def wall_check():
@@ -98,7 +100,7 @@ def create_food():
 
 def eat_food():
     global snakeTail
-    play_sound()
+    play_sound(eatFoodWav)
     snakeTail.append(lastPos)
     create_food()
 
@@ -125,7 +127,7 @@ def new_game():
     snakeY = window.height // cellSize // 2 * cellSize
     snake_dX, snake_dY = 0, 0
 
-def play_sound():
+def play_sound(wavFile):
     if not audioPlayer.playing:
         audioPlayer.queue(wavFile)
         audioPlayer.play()
