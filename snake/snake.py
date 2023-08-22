@@ -157,7 +157,6 @@ def update(dt):
         if not deathSoundTrigger:
             play_sound(deathWav)
             deathSoundTrigger = True
-    next_stage_check()
 
 #initial
 create_food()
