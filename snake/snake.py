@@ -24,6 +24,7 @@ tailLength = 0
 audioPlayer = Player()
 eatFoodWav = load('audio/eat_food.wav', streaming = False)
 deathWav = load('audio/death.wav', streaming = False)
+deathSoundTrigger = False
 
 #called when the window is opened or updated
 @window.event
@@ -81,7 +82,6 @@ def game_over_screen():
                           anchor_x = 'center', anchor_y = 'center',
                           multiline = True, width = window.width,
                           align = 'center')
-    play_sound(deathWav)
 
 #for snek
 def wall_check():
@@ -120,17 +120,21 @@ def move_snake():
     snakeTail.pop()
 
 def new_game():
-    global gameOver, snakeTail, snakeX, snakeY, snake_dX, snake_dY
+    global gameOver, snakeTail, snakeX, snakeY, snake_dX, snake_dY, deathSoundTrigger
     gameOver = False
     snakeTail = []
     snakeX = window.width // cellSize // 2 * cellSize
     snakeY = window.height // cellSize // 2 * cellSize
     snake_dX, snake_dY = 0, 0
+    deathSoundTrigger = False
 
 def play_sound(wavFile):
     if not audioPlayer.playing:
         audioPlayer.queue(wavFile)
         audioPlayer.play()
+
+def set_clock(clockSpeed = 1/15):
+    clock.schedule_interval(update, clockSpeed)
 
 def t_rng(lower, upper):
     rng = SystemRandom()
@@ -138,7 +142,7 @@ def t_rng(lower, upper):
     return randomNumber
 
 def update(dt):
-    global lastPos, snake_dX, snake_dY
+    global lastPos, snake_dX, snake_dY, deathSoundTrigger
     lastPos = [snakeX, snakeY]
     if snakeX == foodX and snakeY == foodY:
         eat_food()
@@ -150,11 +154,15 @@ def update(dt):
     body_check()
     if gameOver:
         game_over_screen()
+        if not deathSoundTrigger:
+            play_sound(deathWav)
+            deathSoundTrigger = True
+    next_stage_check()
 
 #initial
 create_food()
 
 #clock
-clock.schedule_interval(update, 1/15)
+set_clock()
 
 app.run()
